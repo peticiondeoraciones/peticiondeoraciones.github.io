@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oración</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            margin: 50px;
+            background: url('img/fondo.jpg') no-repeat center center fixed;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 90%;
+            margin: auto;
+        }
+        button {
+            width: 90%;
+            max-width: 300px;
+            margin: 15px auto;
+            padding: 15px 30px;
+            font-size: 20px;
+            cursor: pointer;
+            border: none;
+            border-radius: 10px;
+            background-color: #007BFF;
+            color: white;
+            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        @media (max-width: 600px) {
+            button {
+                font-size: 18px;
+                padding: 12px 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Palabra de vida y fé.</h1>
+        <button onclick="location.href='sanidad.html'">Sanidades</button>
+        <button onclick="location.href='liberacion.html'">Liberación de carcel</button>
+        <button onclick="location.href='vicios.html'">Liberación de vicios</button>
+        <button onclick="location.href='conversion.html'">Conversión y reconcilios</button>
+        <button onclick="location.href='fortaleza.html'">Fortaleza Espiritual</button>
+        <button onclick="location.href='empleos.html'">Empleos</button>
+        <button onclick="location.href='peticiones.html'">Otras Peticiones</button>
+    </div>
+</body>
+</html>

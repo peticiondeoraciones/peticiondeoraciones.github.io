@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oraciones</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background: url('img/fondo.jpg') no-repeat center center fixed;
+            background-size: cover;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        input, button {
+            width: 95%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+            background: white;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        .delete-btn {
+            background-color: #dc3545;
+        }
+        .delete-btn:hover {
+            background-color: #c82333;
+        }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Oraciones De Fortaleza Espiritual</h1>
+        <label>Nombre:</label>
+        <input type="text" id="nombre">
+        <label>Motivo de oración:</label>
+        <input type="text" id="motivo">
+        <button class="btn btn-info" id="boton" onclick="guardar()">Guardar</button>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Motivo de oración</th>
+                    <th>Eliminar</th>
+                </tr>
+            </thead>
+            <tbody id="tabla"></tbody>
+        </table>
+    </div>
+    <script src="app5.js"></script>
+</body>
+</html>
