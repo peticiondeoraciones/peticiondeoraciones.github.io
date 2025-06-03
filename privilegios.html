@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privilegios</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background: url('img/fondo.jpg') no-repeat center center fixed;
+            background-size: cover;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        input, button {
+            width: 95%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+            background: white;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        .delete-btn {
+            background-color: #dc3545;
+        }
+        .delete-btn:hover {
+            background-color: #c82333;
+        }
+        .message {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            display: none;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .confirmation {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+            padding: 15px;
+            margin: 15px 0;
+            display: none;
+        }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Privilegios</h1>
+        
+        <!-- Mensajes de estado -->
+        <div id="successMessage" class="message success"></div>
+        <div id="errorMessage" class="message error"></div>
+        <div id="confirmationMessage" class="confirmation">
+            <p id="confirmationText"></p>
+            <button id="confirmYes" class="delete-btn" style="width: auto; margin-right: 10px;">Sí</button>
+            <button id="confirmNo" style="width: auto; background-color: #6c757d;">No</button>
+        </div>
+        
+        <label>Fecha:</label>
+        <input type="date" id="fecha">
+        <label>Nombre:</label>
+        <input type="text" id="nombre">
+        <button class="btn btn-info" id="boton" onclick="guardar()">Guardar</button>
+        <table>
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Nombre</th>
+                    <th>Eliminar</th>
+                </tr>
+            </thead>
+            <tbody id="tabla"></tbody>
+        </table>
+    </div>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyD5N_WFyQZ6jp1PFvsChQdDnP1FMbkOf8w",
+            authDomain: "oracion-7090d.firebaseapp.com",
+            projectId: "oracion-7090d",
+            storageBucket: "oracion-7090d.firebasestorage.app",
+            messagingSenderId: "369496308549",
+            appId: "1:369496308549:web:e7ad4ad86d74d43c659c2c"
+        };
+
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        
+        // Variable para almacenar el ID a eliminar
+        let itemToDelete = null;
+
+        // Función para mostrar mensajes
+        function showMessage(type, message) {
+            const element = document.getElementById(type + 'Message');
+            element.textContent = message;
+            element.style.display = 'block';
+            
+            // Ocultar el mensaje después de 3 segundos
+            setTimeout(() => {
+                element.style.display = 'none';
+            }, 3000);
+        }
+
+        // Función para guardar los datos
+        function guardar() {
+            const fecha = document.getElementById('fecha').value;
+            const nombre = document.getElementById('nombre').value;
+
+            if (fecha && nombre) {
+                db.collection("oraciones").add({
+                    fecha: fecha,
+                    nombre: nombre,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                })
+                .then(() => {
+                    showMessage('success', 'Datos guardados correctamente');
+                    document.getElementById('fecha').value = '';
+                    document.getElementById('nombre').value = '';
+                    cargarDatos();
+                })
+                .catch((error) => {
+                    showMessage('error', 'Error al guardar: ' + error.message);
+                    console.error("Error al guardar: ", error);
+                });
+            } else {
+                showMessage('error', 'Por favor completa todos los campos');
+            }
+        }
+
+        // Función para mostrar confirmación de eliminación
+        function showDeleteConfirmation(id, nombre) {
+            itemToDelete = id;
+            const confirmation = document.getElementById('confirmationMessage');
+            document.getElementById('confirmationText').textContent = `¿Estás seguro de que quieres eliminar el registro de ${nombre}?`;
+            confirmation.style.display = 'block';
+        }
+
+        // Configurar botones de confirmación
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('confirmYes').addEventListener('click', () => {
+                if (itemToDelete) {
+                    eliminar(itemToDelete);
+                }
+                document.getElementById('confirmationMessage').style.display = 'none';
+            });
+            
+            document.getElementById('confirmNo').addEventListener('click', () => {
+                document.getElementById('confirmationMessage').style.display = 'none';
+                itemToDelete = null;
+            });
+        });
+
+        // Función para eliminar un registro
+        function eliminar(id) {
+            db.collection("oraciones").doc(id).delete()
+                .then(() => {
+                    showMessage('success', 'Registro eliminado correctamente');
+                    cargarDatos();
+                })
+                .catch((error) => {
+                    showMessage('error', 'Error al eliminar: ' + error.message);
+                    console.error("Error al eliminar: ", error);
+                });
+        }
+
+        // Función para cargar los datos
+        function cargarDatos() {
+            db.collection("oraciones")
+                .orderBy("timestamp", "desc")
+                .get()
+                .then((querySnapshot) => {
+                    const tabla = document.getElementById('tabla');
+                    tabla.innerHTML = '';
+                    
+                    querySnapshot.forEach((doc) => {
+                        const data = doc.data();
+                        const fila = `
+                            <tr>
+                                <td>${data.fecha}</td>
+                                <td>${data.nombre}</td>
+                                <td><button class="delete-btn" onclick="showDeleteConfirmation('${doc.id}', '${data.nombre}')">Eliminar</button></td>
+                            </tr>
+                        `;
+                        tabla.innerHTML += fila;
+                    });
+                })
+                .catch((error) => {
+                    showMessage('error', 'Error al cargar datos: ' + error.message);
+                    console.error("Error al cargar datos: ", error);
+                });
+        }
+
+        // Cargar datos al iniciar la página
+        window.onload = cargarDatos;
+    </script>
+</body>
+</html>
